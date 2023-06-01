@@ -629,28 +629,33 @@ func (cmme *CostModelMetricsEmitter) Start() bool {
 				}
 
 				if len(costs.RAMAllocation) > 0 {
-					cmme.RAMAllocationRecorder.WithLabelValues(namespace, podName, containerName, nodeName, nodeName).Set(costs.RAMAllocation[0].Value)
-				}
-				if len(costs.RAMReq) > 0 && costs.RAMReq[0].Value > 0 {
-					req := costs.RAMReq[0].Value
+					allocation := costs.RAMAllocation[0].Value
+					cmme.RAMAllocationRecorder.WithLabelValues(namespace, podName, containerName, nodeName, nodeName).Set(allocation)
+
 					usage := 0.0
 					if len(costs.RAMUsed) > 0 {
 						usage = costs.RAMUsed[0].Value
 					}
-					idle := (req - usage) / req
+					idle := (allocation - usage) / allocation
+					if idle < 0 {
+						idle = 0
+					}
 
 					cmme.RAMIdleRecorder.WithLabelValues(namespace, podName, containerName, nodeName, nodeName).Set(idle)
 				}
+
 				if len(costs.CPUAllocation) > 0 {
-					cmme.CPUAllocationRecorder.WithLabelValues(namespace, podName, containerName, nodeName, nodeName).Set(costs.CPUAllocation[0].Value)
-				}
-				if len(costs.CPUReq) > 0 && costs.CPUReq[0].Value > 0 {
-					req := costs.CPUReq[0].Value
+					allocation := costs.CPUAllocation[0].Value
+					cmme.CPUAllocationRecorder.WithLabelValues(namespace, podName, containerName, nodeName, nodeName).Set(allocation)
+
 					usage := 0.0
 					if len(costs.CPUUsed) > 0 {
 						usage = costs.CPUUsed[0].Value
 					}
-					idle := (req - usage) / req
+					idle := (allocation - usage) / allocation
+					if idle < 0 {
+						idle = 0
+					}
 
 					cmme.CPUIdleRecorder.WithLabelValues(namespace, podName, containerName, nodeName, nodeName).Set(idle)
 				}
