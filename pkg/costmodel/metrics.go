@@ -632,32 +632,36 @@ func (cmme *CostModelMetricsEmitter) Start() bool {
 					allocation := costs.RAMAllocation[0].Value
 					cmme.RAMAllocationRecorder.WithLabelValues(namespace, podName, containerName, nodeName, nodeName).Set(allocation)
 
-					usage := 0.0
-					if len(costs.RAMUsed) > 0 {
-						usage = costs.RAMUsed[0].Value
-					}
-					idle := (allocation - usage) / allocation
-					if idle < 0 {
-						idle = 0
-					}
+					if allocation > 0 {
+						usage := 0.0
+						if len(costs.RAMUsed) > 0 {
+							usage = costs.RAMUsed[0].Value
+						}
+						idle := (allocation - usage) / allocation
+						if idle < 0 {
+							idle = 0
+						}
 
-					cmme.RAMIdleRecorder.WithLabelValues(namespace, podName, containerName, nodeName, nodeName).Set(idle)
+						cmme.RAMIdleRecorder.WithLabelValues(namespace, podName, containerName, nodeName, nodeName).Set(idle)
+					}
 				}
 
 				if len(costs.CPUAllocation) > 0 {
 					allocation := costs.CPUAllocation[0].Value
 					cmme.CPUAllocationRecorder.WithLabelValues(namespace, podName, containerName, nodeName, nodeName).Set(allocation)
 
-					usage := 0.0
-					if len(costs.CPUUsed) > 0 {
-						usage = costs.CPUUsed[0].Value
-					}
-					idle := (allocation - usage) / allocation
-					if idle < 0 {
-						idle = 0
-					}
+					if allocation > 0 {
+						usage := 0.0
+						if len(costs.CPUUsed) > 0 {
+							usage = costs.CPUUsed[0].Value
+						}
+						idle := (allocation - usage) / allocation
+						if idle < 0 {
+							idle = 0
+						}
 
-					cmme.CPUIdleRecorder.WithLabelValues(namespace, podName, containerName, nodeName, nodeName).Set(idle)
+						cmme.CPUIdleRecorder.WithLabelValues(namespace, podName, containerName, nodeName, nodeName).Set(idle)
+					}
 				}
 				if len(costs.GPUReq) > 0 {
 					// allocation here is set to the request because shared GPU usage not yet supported.
