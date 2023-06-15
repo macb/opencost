@@ -779,7 +779,9 @@ func (cmme *CostModelMetricsEmitter) Start() bool {
 				if !seen {
 					labels := getLabelStringsFromKey(labelString)
 					cmme.RAMAllocationRecorder.DeleteLabelValues(labels...)
+					cmme.RAMIdleRecorder.DeleteLabelValues(labels...)
 					cmme.CPUAllocationRecorder.DeleteLabelValues(labels...)
+					cmme.CPUIdleRecorder.DeleteLabelValues(labels...)
 					cmme.GPUAllocationRecorder.DeleteLabelValues(labels...)
 					delete(containerSeen, labelString)
 				} else {
